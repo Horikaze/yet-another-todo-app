@@ -1,6 +1,7 @@
-export type todoType = {
+type ColumnType = "backlog" | "todo" | "doing" | "done";
+
+type CardType = {
   title: string;
-  content: string;
-  isDone: boolean;
-  dateCreated: Date;
+  id: string;
+  column: ColumnType;
 };
