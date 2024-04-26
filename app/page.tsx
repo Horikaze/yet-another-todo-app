@@ -1,9 +1,9 @@
-import Kanban from "./components/Kanban";
+import Board from "./components/Board";
 
 export default function Home() {
   return (
-    <main>
-      <Kanban />
+    <main className="bg-neutral-900 h-screen text-neutral-50  overflow-scroll">
+      <Board />
     </main>
   );
 }

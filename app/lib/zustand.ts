@@ -1,8 +1,10 @@
 import { create } from "zustand";
+
 interface CardState {
   cards: CardType[];
   setCards: (newCards: CardType[]) => void;
 }
+
 const DEFAULT_CARDS: CardType[] = [
   // BACKLOG
   { title: "Look into render bug in dashboard", id: "1", column: "backlog" },
@@ -33,7 +35,16 @@ const DEFAULT_CARDS: CardType[] = [
   },
 ];
 
-export const useCardStateStore = create<CardState>()((set) => ({
-  cards: DEFAULT_CARDS,
-  setCards: (newCards) => set({ cards: newCards }),
+export const useCardStateStore = create<CardState>((set, get) => ({
+  cards: [],
+  setCards: (newCards) => {
+    set({ cards: newCards });
+    localStorage.setItem("cards", JSON.stringify(newCards));
+  },
 }));
+
+const storedCards = localStorage.getItem("cards");
+if (storedCards) {
+  const parsedCards = JSON.parse(storedCards);
+  useCardStateStore.setState({ cards: parsedCards });
+}

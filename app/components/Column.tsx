@@ -1,6 +1,7 @@
 import React, { DragEvent, useState } from "react";
 import { useCardStateStore } from "../lib/zustand";
 import Card, { DropIndicator } from "./Card";
+import AddCard from "./AddCard";
 
 type ColumnProps = {
   title: string;
@@ -122,6 +123,9 @@ export default function Column({ title, headingColor, column }: ColumnProps) {
         <span className="text-sm text-neutral-400">{filteredCards.length}</span>
       </div>
       <div
+        onDrop={handleDragEnd}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         className={`h-full w-full transition-colors ${
           active ? "bg-neutral-800/50" : "bg-neutral-800/0"
         }`}
@@ -130,6 +134,7 @@ export default function Column({ title, headingColor, column }: ColumnProps) {
           return <Card key={c.id} {...c} handleDragStart={handleDragStart} />;
         })}
         <DropIndicator beforeId={null} column={column} />
+        <AddCard column={column} />
       </div>
     </div>
   );
