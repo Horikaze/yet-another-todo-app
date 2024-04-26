@@ -31,7 +31,7 @@ type DropIndicatorProps = {
   column: string;
 };
 
-const DropIndicator = ({ beforeId, column }: DropIndicatorProps) => {
+export const DropIndicator = ({ beforeId, column }: DropIndicatorProps) => {
   return (
     <div
       data-before={beforeId || "-1"}

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { DragEvent, useState } from "react";
 import { useCardStateStore } from "../lib/zustand";
-import Card from "./Card";
+import Card, { DropIndicator } from "./Card";
 
 type ColumnProps = {
   title: string;
@@ -15,11 +15,11 @@ export default function Column({ title, headingColor, column }: ColumnProps) {
   const [active, setActive] = useState(false);
 
   const handleDragStart = (e: DragEvent, card: CardType) => {
-    e.dataTransfer!.setData("cardId", card.id);
+    e.dataTransfer.setData("cardId", card.id);
   };
 
   const handleDragEnd = (e: DragEvent) => {
-    const cardId = e.dataTransfer!.getData("cardId");
+    const cardId = e.dataTransfer.getData("cardId");
 
     setActive(false);
     clearHighlights();
@@ -129,6 +129,7 @@ export default function Column({ title, headingColor, column }: ColumnProps) {
         {filteredCards.map((c) => {
           return <Card key={c.id} {...c} handleDragStart={handleDragStart} />;
         })}
+        <DropIndicator beforeId={null} column={column} />
       </div>
     </div>
   );
