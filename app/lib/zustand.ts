@@ -1,10 +1,5 @@
 import { create } from "zustand";
-
-interface CardState {
-  cards: CardType[];
-  setCards: (newCards: CardType[]) => void;
-}
-
+import { persist, createJSONStorage } from "zustand/middleware";
 const DEFAULT_CARDS: CardType[] = [
   // BACKLOG
   { title: "Look into render bug in dashboard", id: "1", column: "backlog" },
@@ -35,16 +30,45 @@ const DEFAULT_CARDS: CardType[] = [
   },
 ];
 
-export const useCardStateStore = create<CardState>((set, get) => ({
-  cards: [],
-  setCards: (newCards) => {
-    set({ cards: newCards });
-    localStorage.setItem("cards", JSON.stringify(newCards));
-  },
-}));
-
-const storedCards = localStorage.getItem("cards");
-if (storedCards) {
-  const parsedCards = JSON.parse(storedCards);
-  useCardStateStore.setState({ cards: parsedCards });
+interface SettingsState {
+  isLocal: boolean;
+  changeLocal: () => void;
 }
+
+export const useSettingsStore = create<SettingsState>()(
+  persist(
+    (set, get) => ({
+      isLocal: true,
+      changeLocal: () => {
+        set((state) => ({ isLocal: !state.isLocal }));
+      },
+    }),
+    {
+      name: "settings",
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);
+
+interface CardState {
+  cards: CardType[];
+  setCards: (newCards: CardType[]) => void;
+}
+
+export const useCardStateStore = create<CardState>()(
+  persist(
+    (set, get) => ({
+      cards: [],
+      setCards: (newCards) => {
+        set({ cards: newCards });
+      },
+    }),
+    {
+      name: "cards",
+      storage:
+        useSettingsStore.getState().isLocal == true
+          ? createJSONStorage(() => sessionStorage)
+          : undefined,
+    }
+  )
+);

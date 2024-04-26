@@ -8,13 +8,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        text: "#eef4f5",
-        background: "#070f0f",
-        primary: "#abbfc0",
-        secondary: "#534a63",
-        accent: "#41d2d9",
-      },
       container: {
         center: true,
       },
