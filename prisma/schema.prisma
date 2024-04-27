@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ColumnType {
+  backlog
+  todo
+  doing
+  done
+}
+
+model User {
+  userId String @id
+  posts  Posts?
+}
+
+model Posts {
+  posts      String @db.Text
+  userUserId String @id @unique
+  User       User   @relation(fields: [userUserId], references: [userId])
+}
+
+// type ColumnType = "backlog" | "todo" | "doing" | "done";
+
+// type CardType = {
+//   title: string;
+//   id: string;
+//   column: ColumnType;
+// };
