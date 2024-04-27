@@ -1,22 +1,54 @@
 import { User } from "@prisma/client";
 import { RefObject, useRef, useState } from "react";
 import { FiCopy, FiUser, FiX } from "react-icons/fi";
-import { createNewUser } from "../lib/actions";
+import { createNewUser, getCardsFromDb } from "../lib/actions";
+import { useCardStateStore, useUserStore } from "../lib/zustand";
+import { AiOutlineFileSync } from "react-icons/ai";
+import { FaSync } from "react-icons/fa";
 
 type ModalProps = {
   dialogRef: RefObject<HTMLDialogElement>;
 };
 
 export default function Modal({ dialogRef }: ModalProps) {
-  const [user, setuser] = useState<User | null>(null);
+  const { setUser, user } = useUserStore();
+  const { setCards } = useCardStateStore();
   const closeDialog = () => {
     if (dialogRef.current) dialogRef.current.close();
   };
 
   const generateUser = async () => {
-    const res = await createNewUser();
-    setuser(res);
+    try {
+      if (user) {
+        return;
+      }
+      const res = await createNewUser();
+      if (!res) {
+        return;
+      }
+      setUser(res.userId);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const getCards = async (formData: FormData) => {
+    try {
+      const input = formData.get("userId") as string;
+      if (input.length !== 5) {
+        return;
+      }
+      setUser(input);
+      const res = await getCardsFromDb(formData);
+      if (!res) return;
+      const cards = JSON.parse(res.cards);
+      console.log(cards);
+      setCards(cards);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <dialog
       id="dialog"
@@ -29,19 +61,20 @@ export default function Modal({ dialogRef }: ModalProps) {
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="max-w-sm w-full min-h-52 flex flex-col rounded border border-neutral-700 bg-neutral-800 p-3 z-10"
+          className="max-w-sm w-full flex flex-col rounded border border-neutral-700 bg-neutral-800 p-3 z-10"
         >
+          <p className=" mb-1 text-sm text-center">Generate ID</p>
           <div className="flex gap-1 h-7">
             <input
               type="text"
               disabled
-              value={user ? user.userId : "Click generate"}
+              value={user ? user : "Click generate"}
               className="w-full text-neutral-400 cursor-text select-text h-full px-2 rounded border border-neutral-700 bg-neutral-800 text-sm  placeholder-violet-300 focus:outline-0"
             />
             <button
-              disabled={user ? false : true}
+              disabled={!!!user}
               onClick={() => {
-                navigator.clipboard.writeText(user?.userId!);
+                navigator.clipboard.writeText(user!);
               }}
               className="flex disabled:bg-neutral-300 items-center gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
             >
@@ -49,13 +82,40 @@ export default function Modal({ dialogRef }: ModalProps) {
             </button>
             <button
               onClick={generateUser}
-              className="flex items-center gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
+              disabled={!!user}
+              className="flex items-center disabled:bg-neutral-400 gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
             >
               <span>Generate</span>
               <FiUser />
             </button>
           </div>
-          <div className="mt-auto">
+          <div className="w-full h-px bg-neutral-400 my-4 relative">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="bg-neutral-800 text-sm px-2">OR</span>
+            </div>
+          </div>
+          <p className=" mb-1 text-sm text-center">Paste your ID</p>
+          <form action={getCards} className="flex gap-1 h-7">
+            <input
+              type="text"
+              name="userId"
+              id="userId"
+              placeholder="00000"
+              className="w-full text-white cursor-text select-text h-full px-2 rounded border border-neutral-700 bg-neutral-800 text-sm placeholder-neutral-400 focus:outline-0"
+            />
+            <button
+              onClick={generateUser}
+              type="submit"
+              className="flex items-center disabled:bg-neutral-400 gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
+            >
+              <span>Sync</span>
+              <FaSync />
+            </button>
+          </form>
+          <div className="text-neutral-400 text-sm  text-center justify-center items-center my-auto">
+            <p>Save your generated code to acces your TODOs on any device!</p>
+          </div>
+          <div className="flex justify-end">
             <button
               onClick={closeDialog}
               className="flex items-center gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"

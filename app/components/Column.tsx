@@ -117,7 +117,7 @@ export default function Column({ title, headingColor, column }: ColumnProps) {
   };
 
   return (
-    <div className="w-56 shrink-0 overflow-hidden">
+    <div className="w-56 shrink-0">
       <div className="mb-3 flex items-center justify-between">
         <h3 className={`font-medium ${headingColor}`}>{title}</h3>
         <span className="text-sm text-neutral-400">{filteredCards.length}</span>

@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 enum ColumnType {
@@ -22,19 +23,11 @@ enum ColumnType {
 
 model User {
   userId String @id
-  posts  Posts?
+  cards  Cards?
 }
 
-model Posts {
-  posts      String @db.Text
+model Cards {
+  cards      String @db.Text
   userUserId String @id @unique
   User       User   @relation(fields: [userUserId], references: [userId])
 }
-
-// type ColumnType = "backlog" | "todo" | "doing" | "done";
-
-// type CardType = {
-//   title: string;
-//   id: string;
-//   column: ColumnType;
-// };

@@ -50,6 +50,25 @@ export const useSettingsStore = create<SettingsState>()(
   )
 );
 
+interface UserState {
+  user: string | null;
+  setUser: (newID: string) => void;
+}
+
+export const useUserStore = create<UserState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      setUser: (newID) => {
+        set({ user: newID });
+      },
+    }),
+    {
+      name: "user",
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);
 interface CardState {
   cards: CardType[];
   setCards: (newCards: CardType[]) => void;
