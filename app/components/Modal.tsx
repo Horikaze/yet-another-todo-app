@@ -20,7 +20,7 @@ export default function Modal({ dialogRef }: ModalProps) {
   return (
     <dialog
       id="dialog"
-      className="size-full items-center backdrop:bg-neutral-900/20 text-neutral-50 backdrop-blur-sm bg-neutral-900/20"
+      className="size-full relative items-center backdrop:bg-neutral-900/20 text-neutral-50 backdrop:backdrop-blur-sm bg-neutral-900/20"
       ref={dialogRef}
     >
       <div
@@ -29,7 +29,7 @@ export default function Modal({ dialogRef }: ModalProps) {
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm min-h-52 flex flex-col rounded border border-neutral-700 bg-neutral-800 p-3 z-10"
+          className="max-w-sm w-full min-h-52 flex flex-col rounded border border-neutral-700 bg-neutral-800 p-3 z-10"
         >
           <div className="flex gap-1 h-7">
             <input

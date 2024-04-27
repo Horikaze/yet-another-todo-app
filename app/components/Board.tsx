@@ -5,7 +5,7 @@ import DeleteCard from "./DeleteCard";
 
 export default function Board() {
   return (
-    <div className="flex size-full gap-3 px-12 pt-28">
+    <div className="size-full flex  gap-x-3 pt-24 px-12 overflow-auto h-screen">
       <Column
         title="Backlog"
         column="backlog"

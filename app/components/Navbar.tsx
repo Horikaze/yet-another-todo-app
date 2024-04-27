@@ -12,7 +12,7 @@ export default function Navbar() {
     if (dialogRef.current) dialogRef.current.showModal();
   };
   return (
-    <div className="w-full h-16 absolute top-0 left-0 border-b border-white/20 bg-neutral-900">
+    <div className="w-full h-16 fixed top-0 left-0 border-b border-white/20 bg-neutral-900">
       <div className="size-full container flex gap-4 items-center justify-end select-none">
         <button
           type="submit"
