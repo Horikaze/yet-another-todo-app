@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useTransition } from "react";
 import { FaSync } from "react-icons/fa";
 import { FiCloud } from "react-icons/fi";
 import { syncWithDb } from "../lib/actions";
@@ -10,6 +10,10 @@ import Modal from "./Modal";
 export default function Navbar() {
   const { cards } = useCardStateStore();
   const { user } = useUserStore();
+  const [isPending, startTransition] = useTransition();
+  const [syncChanged, setSyncChanged] = useState(false);
+  useCardStateStore.subscribe((state) => setSyncChanged(true));
+
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openDialog = () => {
     if (dialogRef.current) dialogRef.current.showModal();
@@ -17,10 +21,13 @@ export default function Navbar() {
 
   const syncWithCloud = async () => {
     try {
-      await syncWithDb({
-        cards: cards,
-        userId: user!,
+      startTransition(async () => {
+        await syncWithDb({
+          cards: cards,
+          userId: user!,
+        });
       });
+      setSyncChanged(false);
     } catch (error) {
       console.log(error);
     }
@@ -33,8 +40,10 @@ export default function Navbar() {
           onClick={syncWithCloud}
           className="flex items-center gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
         >
-          <span>Sync</span>
-          <FaSync />
+          <span>{syncChanged ? "*Sync" : "Sync"}</span>
+          <FaSync
+            className={`${isPending ? "animate-spin" : "animate-none"}`}
+          />
         </button>
         <button
           onClick={openDialog}

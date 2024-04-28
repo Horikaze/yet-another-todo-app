@@ -1,10 +1,8 @@
-import { User } from "@prisma/client";
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useTransition } from "react";
+import { FaSync } from "react-icons/fa";
 import { FiCopy, FiUser, FiX } from "react-icons/fi";
 import { createNewUser, getCardsFromDb } from "../lib/actions";
 import { useCardStateStore, useUserStore } from "../lib/zustand";
-import { AiOutlineFileSync } from "react-icons/ai";
-import { FaSync } from "react-icons/fa";
 
 type ModalProps = {
   dialogRef: RefObject<HTMLDialogElement>;
@@ -13,6 +11,7 @@ type ModalProps = {
 export default function Modal({ dialogRef }: ModalProps) {
   const { setUser, user } = useUserStore();
   const { setCards } = useCardStateStore();
+  const [isPending, startTransition] = useTransition();
   const closeDialog = () => {
     if (dialogRef.current) dialogRef.current.close();
   };
@@ -34,16 +33,18 @@ export default function Modal({ dialogRef }: ModalProps) {
 
   const getCards = async (formData: FormData) => {
     try {
-      const input = formData.get("userId") as string;
-      if (input.length !== 5) {
-        return;
-      }
-      setUser(input);
-      const res = await getCardsFromDb(formData);
-      if (!res) return;
-      const cards = JSON.parse(res.cards);
-      console.log(cards);
-      setCards(cards);
+      startTransition(async () => {
+        const input = formData.get("userId") as string;
+        if (input.length !== 5) {
+          return;
+        }
+        setUser(input);
+        const res = await getCardsFromDb(formData);
+        if (!res) return;
+        const cards = JSON.parse(res.cards);
+        console.log(cards);
+        setCards(cards);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -106,10 +107,12 @@ export default function Modal({ dialogRef }: ModalProps) {
             <button
               onClick={generateUser}
               type="submit"
-              className="flex items-center disabled:bg-neutral-400 gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
+              className="flex items-center whitespace-nowrap disabled:bg-neutral-400 gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
             >
-              <span>Sync</span>
-              <FaSync />
+              <span>Sync from cloud</span>
+              <FaSync
+                className={`${isPending ? "animate-spin" : "animate-none"}`}
+              />
             </button>
           </form>
           <div className="text-neutral-400 text-sm  text-center justify-center items-center my-auto">
