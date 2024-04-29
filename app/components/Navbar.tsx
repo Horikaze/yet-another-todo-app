@@ -32,19 +32,20 @@ export default function Navbar() {
       console.log(error);
     }
   };
-
   return (
     <div className="w-full h-16 fixed top-0 left-0 border-b border-white/20 bg-neutral-900">
       <div className="size-full container flex gap-4 items-center justify-end select-none md:px-10 px-2">
-        <button
-          onClick={syncWithCloud}
-          className="flex items-center gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
-        >
-          <span>{syncChanged ? "*Sync" : "Sync"}</span>
-          <FaSync
-            className={`${isPending ? "animate-spin" : "animate-none"}`}
-          />
-        </button>
+        {user ? (
+          <button
+            onClick={syncWithCloud}
+            className="flex items-center gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
+          >
+            <span>{syncChanged ? "*Sync to cloud" : "Sync to cloud"}</span>
+            <FaSync
+              className={`${isPending ? "animate-spin" : "animate-none"}`}
+            />
+          </button>
+        ) : null}
         <button
           onClick={openDialog}
           className="flex items-center gap-1.5 rounded bg-neutral-50 px-3 py-1.5 text-xs text-neutral-950 transition-colors hover:bg-neutral-300"
